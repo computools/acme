@@ -1,6 +1,6 @@
-#BASKET TOTAL
+## BASKET TOTAL
 
-##Project set up
+## Project set up
 
 1) Clone project from repo
    ``https://github.com/computools/acme``
