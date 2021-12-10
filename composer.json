@@ -1,0 +1,25 @@
+{
+  "name": "computools/acme",
+  "description": "Acme basket",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "ilya",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "illuminate/collections": "^8.75",
+    "moneyphp/money": "3",
+    "phpunit/phpunit": "^9.5",
+    "ext-intl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Acme\\": "src/",
+      "Tests\\": "tests/"
+    }
+  }
+}
