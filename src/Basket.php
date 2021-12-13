@@ -22,19 +22,19 @@ class Basket
 
     private DeliveryChargeService $deliveryChargeService;
 
-    private OfferService $offerService;
-
     private Collection $productCodes;
+
+    private OfferService $offerService;
 
     public function __construct(
         ProductCatalogue $productCatalogue,
         DeliveryChargeService $deliveryChargeService,
         OfferService $offerService
-    ) {
+    )
+    {
         $this->productCatalogue = $productCatalogue;
         $this->deliveryChargeService = $deliveryChargeService;
         $this->offerService = $offerService;
-
         $this->productCodes = new Collection();
     }
 
@@ -49,12 +49,12 @@ class Basket
     {
         $productFilter = ProductFilter::make();
 
-        $appliedOptions = $productFilter->setInfo($this->productCodes);
+        $codes = $productFilter->setCodes($this->productCodes);
 
-        $products = $this->productCatalogue->getAll($appliedOptions);
-        $appliedOfferProducts = $this->offerService->applyOffers($products);
+        $products = $this->productCatalogue->getAll($codes);
+        $productsWithAppliedOffer = $this->offerService->applyOffers($products);
 
-        $totalPrice = $this->getTotalPrice($appliedOfferProducts);
+        $totalPrice = $this->getTotalPrice($productsWithAppliedOffer);
         $deliveryPricedProducts = $this->deliveryChargeService->addDeliveryCost($totalPrice);
 
         return $this->moneyFormatter($deliveryPricedProducts);

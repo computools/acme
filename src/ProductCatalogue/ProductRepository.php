@@ -3,12 +3,22 @@
 namespace Acme\ProductCatalogue;
 
 use Acme\Basket;
+use Acme\Offer\OfferRepository;
 use Illuminate\Support\Collection;
 use Money\Currency;
 use Money\Money;
 
 class ProductRepository
 {
+    private ProductOfferRepository $productOfferRepository;
+    private OfferRepository $offerRepository;
+
+    public function __construct(ProductOfferRepository $productOfferRepository, OfferRepository $offerRepository)
+    {
+        $this->productOfferRepository = $productOfferRepository;
+        $this->offerRepository = $offerRepository;
+    }
+
     /**
      * @param ProductFilter $filters
      * @return Collection
@@ -17,14 +27,22 @@ class ProductRepository
     {
         $productsCollection = new Collection();
 
-        foreach ($filters->getInfo() as $code) {
+        foreach ($filters->getCodes() as $code) {
 
             $filteredProduct = $this->prepareProductCollection()->where('code', '=', $code)->first();
+
+            $productOffers = $this->productOfferRepository->prepareRelationCollection()->where('product_code', '=', $code);
+
+            $offers = collect();
+            foreach($productOffers as $productOffer) {
+                $offers->add($this->offerRepository->prepareOffersCollection()->where('id', '=', $productOffer['offer_id'])->first());
+            }
 
             $product = new Product();
             $product->setName($filteredProduct['productName']);
             $product->setCode($filteredProduct['code']);
             $product->setPrice(new Money(($filteredProduct['productPrice']), new Currency(Basket::CURRENCY)));
+            $product->setOffers($offers);
 
             $productsCollection->add($product);
         }

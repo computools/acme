@@ -2,24 +2,26 @@
 
 namespace Acme\ProductCatalogue;
 
+use Illuminate\Support\Collection;
+
 class ProductFilter
 {
-    private array $info;
+    private Collection $codes;
 
     public static function make(): self
     {
         return new ProductFilter();
     }
 
-    public function setInfo($options): ProductFilter
+    public function setCodes(Collection $codes): ProductFilter
     {
-        $this->info = $options->toArray();
+        $this->codes = $codes;
 
         return $this;
     }
 
-    public function getInfo()
+    public function getCodes(): Collection
     {
-        return $this->info;
+        return $this->codes;
     }
 }

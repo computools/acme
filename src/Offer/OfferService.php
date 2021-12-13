@@ -2,27 +2,39 @@
 
 namespace Acme\Offer;
 
-use Acme\Basket;
+use ErrorException;
 use Illuminate\Support\Collection;
-use Money\Currency;
-use Money\Money;
 
 class OfferService
 {
+    private OfferRepository $offerRepository;
+
+    public function __construct(OfferRepository $offerRepository)
+    {
+        $this->offerRepository = $offerRepository;
+    }
+
     public function applyOffers(Collection $products): Collection
     {
-        $counterOfProductCodes = 0;
-        $code = 'R01';
-
-        foreach ($products as $productItem) {
-            if ($productItem->getCode() == $code) {
-                $counterOfProductCodes++;
-                if ($counterOfProductCodes % 2 == 0) {
-                    $productItem->setPrice((new Money($productItem->getPrice()->getAmount(), new Currency(Basket::CURRENCY)))->divide(2, PHP_ROUND_HALF_DOWN));
-                }
-            }
+        $offers = $this->offerRepository->prepareOffersCollection();
+        foreach ($offers as $offer) {
+            $processor = $this->makeOfferProcessor($offer['type']);
+            $processor->apply($products);
         }
-
         return $products;
+    }
+
+    /**
+     * @param $type
+     * @return OfferProcessorInterface
+     * @throws ErrorException
+     */
+    private function makeOfferProcessor($type): OfferProcessorInterface
+    {
+        switch ($type) {
+            case 'SpecialEverySecondProductHalfPrice':
+                return new SpecialEverySecondProductHalfPriceProcessor();
+            default: throw new ErrorException('Undefined offer ty[e');
+        }
     }
 }

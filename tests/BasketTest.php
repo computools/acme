@@ -5,8 +5,10 @@ namespace Tests;
 use Acme\Basket;
 use Acme\DeliveryCharge\DeliveryChargeService;
 use Acme\DeliveryCharge\Rules;
+use Acme\Offer\OfferRepository;
 use Acme\Offer\OfferService;
 use Acme\ProductCatalogue\ProductCatalogue;
+use Acme\ProductCatalogue\ProductOfferRepository;
 use Acme\ProductCatalogue\ProductRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -19,16 +21,17 @@ class BasketTest extends TestCase
      */
     public function testGetTotal(array $input, array $expected)
     {
-
         $rules = new Rules();
-        $product = new ProductRepository();
+        $product = new ProductRepository(
+            new ProductOfferRepository(),
+            new OfferRepository()
+        );
 
         $basket = new Basket(
             new ProductCatalogue($product),
             new DeliveryChargeService($rules),
-            new OfferService()
+            new OfferService(new OfferRepository()),
         );
-
 
         foreach ($input['codes'] as $code) {
             $basket->add($code);
@@ -89,5 +92,4 @@ class BasketTest extends TestCase
             ],
         ];
     }
-
 }

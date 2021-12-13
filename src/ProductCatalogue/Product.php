@@ -2,6 +2,7 @@
 
 namespace Acme\ProductCatalogue;
 
+use Illuminate\Support\Collection;
 use Money\Money;
 
 class Product
@@ -11,6 +12,8 @@ class Product
     private Money $price;
 
     private string $name;
+
+    private Collection $offers;
 
     public function getCode(): string
     {
@@ -44,6 +47,18 @@ class Product
     public function setName(string $name): Product
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getOffers(): Collection
+    {
+        return $this->offers;
+    }
+
+    public function setOffers(Collection $offers): Product
+    {
+        $this->offers = $offers;
 
         return $this;
     }
